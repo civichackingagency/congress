@@ -1,0 +1,77 @@
+main {
+    display: none;
+}
+
+img.md {
+    width: 10rem;
+}
+
+img.xl {
+    width: 15rem;
+}
+
+img.rounded-circle {
+    max-width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.card.clean {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.fancy-2 img {
+    border-left: 0.5rem solid var(--color-1);
+    border-bottom: 0.5rem solid var(--color-1);
+    border-right: 0.5rem solid var(--color-2);
+    border-top: 0.5rem solid var(--color-2);
+}
+
+.libertarian {
+    --color-1: #ffd100;
+    --color-2: #fbeba5;
+}
+
+.republican {
+    --color-1: #e81b23;
+    --color-2: #d98588;
+}
+
+.democratic {
+    --color-1: #00aef3;
+    --color-2: #9fdcf5;
+}
+
+.independent-democrat {
+    --color-1: #d79ff3;
+    --color-2: #a140d1;
+}
+
+.independent {
+    --color-1: #b3952b;
+    --color-2: #d9c373;
+}
+
+.topic {
+    padding: 1rem;
+    overflow: hidden;
+    height: auto;
+    transition: 1s max-height, 1s padding-top;
+}
+
+.topic:hover {
+    padding-top: 1rem !important;
+    max-height: 10rem !important;
+}
+
+.topic:first-child {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.topic:last-child {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
