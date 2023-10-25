@@ -17,14 +17,13 @@ if (page == 'house' || page == 'senate') {
                 finishedLoading = false;
                 break;
             }
-        if (false && !finishedLoading && data.pagination.next) {
+        if (!finishedLoading && data.pagination.next) {
             req.open('GET', data.pagination.next + '&api_key=hExsrBBSxIrdS8bwKMuQd3oxFjLMEoIb4YkQZNMx');
             req.send();
         }
         members = members.concat(data.members.filter(member => member.terms && member.terms.item[member.terms.item.length - 1].chamber == chamber && !member.terms.item[member.terms.item.length - 1].endYear));
-        if (true || finishedLoading) {
+        if (finishedLoading) {
             members = members.sort((a, b) => a.name.localeCompare(b.name));
-            console.log(members)
             for (let i = 0; i < members.length; i++) {
                 let deck;
                 const member = members[i];
@@ -58,7 +57,6 @@ else if (page == 'member') {
     req.open('GET', 'https://api.congress.gov/v3/member/' + params.get('member') + '?api_key=hExsrBBSxIrdS8bwKMuQd3oxFjLMEoIb4YkQZNMx&format=json');
     req.onload = function () {
         const data = JSON.parse(this.response).member;
-        console.log(data);
 
         const currentTerm = data.terms[data.terms.length - 1];
         document.head.querySelector('title').innerHTML = currentTerm.memberType + ' ' + data.directOrderName;
@@ -90,7 +88,6 @@ else if (page == 'member') {
             req.open('GET', data.sponsoredLegislation.url + '?format=json&limit=250&api_key=hExsrBBSxIrdS8bwKMuQd3oxFjLMEoIb4YkQZNMx');
             req.onload = function () {
                 let legislation = JSON.parse(this.response).sponsoredLegislation.filter(piece => piece.type != null && piece.congress == currentTerm.congress);
-                console.log(legislation);
                 document.getElementById('legislation-count').innerText = '(' + legislation.length + ' most recent in Congress ' + currentTerm.congress + ')';
                 for (let i = 0; i < legislation.length; i++)
                     legislation[i].introducedDate = new Date(legislation[i].introducedDate);
@@ -106,14 +103,13 @@ else if (page == 'member') {
                         else
                             topics.set(piece.policyArea.name, topics.get(piece.policyArea.name) + 1);
                     ul.innerHTML += `
-                    <li><a target="_blank" href="https://congress.gov/bill/${currentTerm.congress}th-congress/${currentTerm.chamber.substring(0, currentTerm.chamber.indexOf(' ')).toLowerCase()}-${piece.type == 'S' || piece.type == 'HR' ? 'bill' : piece.type == 'SRES' || piece.type == 'HRES' ? 'resolution' : piece.type == 'SCONRES' ? 'concurrent-resolution' : 'joint-resolution'}/${piece.number}">${piece.title} (${piece.introducedDate.toLocaleDateString()})</a></li>
+                    <li><a target="_blank" href="https://congress.gov/bill/${currentTerm.congress}th-congress/${currentTerm.chamber.substring(0, (currentTerm.chamber.indexOf(' ') + 1 || currentTerm.chamber.length + 1) - 1).toLowerCase()}-${piece.type == 'S' || piece.type == 'HR' ? 'bill' : piece.type == 'SRES' || piece.type == 'HRES' ? 'resolution' : piece.type == 'SCONRES' ? 'concurrent-resolution' : 'joint-resolution'}/${piece.number}">${piece.title} (${piece.introducedDate.toLocaleDateString()})</a></li>
                 `;
                 });
 
                 req.open('GET', data.cosponsoredLegislation.url + '?format=json&limit=250&api_key=hExsrBBSxIrdS8bwKMuQd3oxFjLMEoIb4YkQZNMx');
                 req.onload = function () {
                     const cosponsoredLegislation = JSON.parse(this.response).cosponsoredLegislation.filter(piece => piece.type != null && piece.congress == currentTerm.congress);
-                    console.log(cosponsoredLegislation)
                     for (const piece of cosponsoredLegislation)
                         if (piece.policyArea.name)
                             if (!topics.has(piece.policyArea.name))
