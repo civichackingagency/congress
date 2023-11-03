@@ -75,3 +75,25 @@ img.rounded-circle {
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
 }
+
+img.loading {
+    width: min(50%, 5rem);
+    display: block;
+    margin: auto;
+    animation: spin 1.75s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+footer {
+    margin-top: 2rem;
+    padding: 2rem;
+    background-color: #e9ecef;
+}
