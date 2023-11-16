@@ -4,17 +4,18 @@ const req = new XMLHttpRequest();
 
 if (page == 'house' || page == 'senate') {
     document.getElementById('member-list').style.display = 'revert';
-    document.querySelector('.nav-item.active').classList.remove('active');
+    document.querySelector('.active').classList.remove('active');
     document.getElementById('nav-' + page).classList.add('active');
 
     const chamber = page == 'house' ? 'House of Representatives' : 'Senate';
-    document.getElementById('jumbotron-title').innerHTML = chamber;
-    document.getElementById('jumbotron-subtitle').innerHTML = 'United States ' + (page == 'house' ? 'Representatives' : 'Senators');
+    document.getElementById('jumbotron-title').innerHTML = 'U.S. ' + chamber;
+    document.title = (page == 'house' ? 'House of Representatives' : 'Senators') + ' - CHA';
     let finishedLoading = false;
     let members = [];
     req.open('GET', 'https://get.usa.govfresh.com/get?url=https://api.congress.gov/v3/member&limit=250&format=json');
     req.onload = function () {
         let data = JSON.parse(this.response);
+        console.log(data);
         finishedLoading = true;
         for (const member of data.members)
             if (member.terms && member.terms.item[member.terms.item.length - 1].chamber == chamber && !member.terms.item[member.terms.item.length - 1].endYear) {
@@ -22,7 +23,7 @@ if (page == 'house' || page == 'senate') {
                 break;
             }
         if (!finishedLoading && data.pagination.next) {
-            req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.pagination.next);
+            req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.pagination.next + '&format=json');
             req.send();
         }
         members = members.concat(data.members.filter(member => member.terms && member.terms.item[member.terms.item.length - 1].chamber == chamber && !member.terms.item[member.terms.item.length - 1].endYear));
@@ -66,13 +67,13 @@ else if (page == 'member') {
 
         const currentTerm = data.terms[data.terms.length - 1];
         document.head.querySelector('title').innerHTML = currentTerm.memberType + ' ' + data.directOrderName;
-        document.querySelector('.jumbotron h1').innerHTML = currentTerm.memberType + ' ' + data.directOrderName;
-        document.querySelector('.jumbotron p.lead').innerHTML = `${data.state} (${data.partyHistory[data.partyHistory.length - 1].partyName})`;
+        document.getElementById('jumbotron-title').innerHTML = currentTerm.memberType + ' ' + data.directOrderName;
+        document.getElementById('jumbotron-subtitle').innerHTML = `${data.state} (${data.partyHistory[data.partyHistory.length - 1].partyName})`;
         document.querySelector('#member-data .col-sm-3').innerHTML = `
              <div class="fancy-2"><img class="rounded-circle xl  mb-3 ${data.partyHistory[data.partyHistory.length - 1].partyName.toLowerCase().replace(' ', '-')}" alt="${data.directOrderName}" src="${data.depiction.imageUrl || '/assets/img/icons/1F9D1-200D-1F4BC.png'}"></div>
              ${data.depiction.attribution ? `<p class="source">Photo source: ${data.depiction.attribution || ''}</p>` : ''}
          `+ document.querySelector('#member-data .col-sm-3').innerHTML;
-        document.querySelector('#member-data .col-sm-9').innerHTML = `
+        document.querySelector('#member-data .col-sm-6').innerHTML = `
             <h2>Contact</h2>
             <ul>
             <li>Mail: ${data.addressInformation.officeAddress}</li>
@@ -84,13 +85,13 @@ else if (page == 'member') {
             <h2>Sponsored legislation</h2>
             <p class="source" id="legislation-count"></p>
             <ul class="legislation"></ul>
-        `+ document.querySelector('#member-data .col-sm-9').innerHTML;
+        `+ document.querySelector('#member-data .col-sm-6').innerHTML;
         data.terms.reverse().forEach(term => {
             document.querySelector('ul.terms').innerHTML += `<li>${term.startYear}-${term.endYear || 'Present'} (${term.chamber})</li>`
         });
 
         if (data.sponsoredLegislation) {
-            req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.sponsoredLegislation.url + '&format=json&limit=250');
+            req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.sponsoredLegislation.url + '?format=json&limit=250');
             req.onload = function () {
                 let legislation = JSON.parse(this.response).sponsoredLegislation.filter(piece => piece.type != null && piece.congress == currentTerm.congress);
                 document.getElementById('legislation-count').innerText = '(' + legislation.length + ' most recent in Congress ' + currentTerm.congress + ')';
@@ -112,9 +113,9 @@ else if (page == 'member') {
                     `;
                 });
 
-                document.querySelector('.col-sm-9 img.loading').style.display = 'none';
+                document.querySelector('.col-sm-6 img.loading').style.display = 'none';
 
-                req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.cosponsoredLegislation.url + '&format=json&limit=250');
+                req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.cosponsoredLegislation.url + '?format=json&limit=250');
                 req.onload = function () {
                     const cosponsoredLegislation = JSON.parse(this.response).cosponsoredLegislation.filter(piece => piece.type != null && piece.congress == currentTerm.congress);
                     for (const piece of cosponsoredLegislation)
@@ -137,7 +138,7 @@ else if (page == 'member') {
                         '#e5e4fa',
                         '#ebe3f9',
                     ];*/
-                    document.querySelector('#member-data .col-sm-3').innerHTML += '<p>' + currentTerm.memberType + ' ' + data.lastName + '\'s legislative topics:</p><div id="topics"></div>';
+                    document.querySelector('#member-data .col-sm-3#legislative-topics').innerHTML += '<h2>Legislative topics</h2><div id="topics"></div>';
                     const topicsDiv = document.querySelector('#topics');
                     topics = [...topics.entries()].sort((a, b) => b[1] - a[1]);
                     const totalPieces = topics.reduce((a, b) => a + b[1], 0);
@@ -152,7 +153,7 @@ else if (page == 'member') {
                         // TODO: box is too big
                         // TODO: Sanders's
                         // TODO: smallest box should be 1rem + padding
-                        const color = `hsl(${Math.round(hsl[0] * 360)}, ${Math.round(hsl[1] * 30) + 60}%, ${Math.round(hsl[2] * 30) + 60}%)`;
+                        const color = `hsl(${Math.round(hsl[0] * 360)}, ${Math.round(hsl[1] * 30) + 20}%, ${Math.round(hsl[2] * 30) + 20}%)`;
                         const percent = Math.round(100 * topic[1] / totalPieces);
                         topicsDiv.innerHTML += `<div class="topic" style="background-color: ${color}; max-height: ${window.innerHeight * topic[1] / totalPieces}px; min-height: ${window.innerHeight * topic[1] / totalPieces}px"><span>${topic[0]} (${percent >= 1 ? percent : '<1'}%)</span></div>`;
                     });

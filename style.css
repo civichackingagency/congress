@@ -2,6 +2,10 @@ main {
     display: none;
 }
 
+img.sm {
+    width: 3rem;
+}
+
 img.md {
     width: 10rem;
 }
@@ -95,5 +99,13 @@ img.loading {
 footer {
     margin-top: 2rem;
     padding: 2rem;
-    background-color: #e9ecef;
+    border-top: 2px solid rgba(var(--bs-tertiary-bg-rgb),1)!important;
+}
+
+footer a {
+    color: white;
+}
+
+.active > a {
+    color: white;
 }
