@@ -12,7 +12,7 @@ if (page == 'house' || page == 'senate') {
     document.title = (page == 'house' ? 'House of Representatives' : 'Senators') + ' - CHA';
     let finishedLoading = false;
     let members = [];
-    req.open('GET', 'https://get.usa.govfresh.com/get?url=https://api.congress.gov/v3/member&limit=250&format=json');
+    req.open('GET', /*'https://get.usa.govfresh.com/get?url=https://api.congress.gov/v3/member&limit=250&format=json'*/'https://api.congress.gov/v3/member?limit=250&format=json&api_key=fvA9u4qpBK9EY8vGLkPI55IDAh2qO0ImrORbmr0L');
     req.onload = function () {
         let data = JSON.parse(this.response);
         console.log(data);
@@ -23,7 +23,7 @@ if (page == 'house' || page == 'senate') {
                 break;
             }
         if (!finishedLoading && data.pagination.next) {
-            req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.pagination.next + '&format=json');
+            req.open('GET', /*'https://get.usa.govfresh.com/get?url=' + */data.pagination.next + '&api_key=fvA9u4qpBK9EY8vGLkPI55IDAh2qO0ImrORbmr0L');
             req.send();
         }
         members = members.concat(data.members.filter(member => member.terms && member.terms.item[member.terms.item.length - 1].chamber == chamber && !member.terms.item[member.terms.item.length - 1].endYear));
@@ -61,7 +61,7 @@ if (page == 'house' || page == 'senate') {
 }
 else if (page == 'member') {
     document.getElementById('member-data').style.display = 'revert';
-    req.open('GET', 'https://get.usa.govfresh.com/get?url=https://api.congress.gov/v3/member/' + params.get('member') + '&format=json');
+    req.open('GET', /*'https://get.usa.govfresh.com/get?url=*/'https://api.congress.gov/v3/member/' + params.get('member') + '?api_key=fvA9u4qpBK9EY8vGLkPI55IDAh2qO0ImrORbmr0L&format=json');
     req.onload = function () {
         const data = JSON.parse(this.response).member;
 
@@ -91,7 +91,7 @@ else if (page == 'member') {
         });
 
         if (data.sponsoredLegislation) {
-            req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.sponsoredLegislation.url + '?format=json&limit=250');
+            req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.sponsoredLegislation.url + '?format=json&limit=250&api_key=fvA9u4qpBK9EY8vGLkPI55IDAh2qO0ImrORbmr0L');
             req.onload = function () {
                 let legislation = JSON.parse(this.response).sponsoredLegislation.filter(piece => piece.type != null && piece.congress == currentTerm.congress);
                 document.getElementById('legislation-count').innerText = '(' + legislation.length + ' most recent in Congress ' + currentTerm.congress + ')';
@@ -115,7 +115,7 @@ else if (page == 'member') {
 
                 document.querySelector('.col-sm-6 img.loading').style.display = 'none';
 
-                req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.cosponsoredLegislation.url + '?format=json&limit=250');
+                req.open('GET', 'https://get.usa.govfresh.com/get?url=' + data.cosponsoredLegislation.url + '?format=json&limit=250&api_key=fvA9u4qpBK9EY8vGLkPI55IDAh2qO0ImrORbmr0L');
                 req.onload = function () {
                     const cosponsoredLegislation = JSON.parse(this.response).cosponsoredLegislation.filter(piece => piece.type != null && piece.congress == currentTerm.congress);
                     for (const piece of cosponsoredLegislation)
