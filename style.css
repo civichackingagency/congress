@@ -26,7 +26,9 @@ img.rounded-circle {
     padding: 0;
 }
 
-.fancy-2 img {
+.fancy-image img {
+    display: block;
+    margin: auto;
     border-left: 0.5rem solid var(--color-1);
     border-bottom: 0.5rem solid var(--color-1);
     border-right: 0.5rem solid var(--color-2);
@@ -65,17 +67,17 @@ img.rounded-circle {
     transition: 1s max-height, 1s padding-top;
 }
 
-.topic:hover {
+div.topic:hover {
     padding-top: 1rem !important;
     max-height: 10rem !important;
 }
 
-.topic:first-child {
+div.topic:nth-child(2) {
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
 }
 
-.topic:last-child {
+div.topic:last-child {
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
 }
@@ -91,6 +93,7 @@ img.loading {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -99,13 +102,35 @@ img.loading {
 footer {
     margin-top: 2rem;
     padding: 2rem;
-    border-top: 2px solid rgba(var(--bs-tertiary-bg-rgb),1)!important;
+    border-top: 2px solid rgba(var(--bs-tertiary-bg-rgb), 1) !important;
 }
 
 footer a {
+    color: black;
+    text-decoration: none;
+}
+
+.topic {
+    background-color: var(--topic-light);
+    color: black;
+}
+
+body[data-bs-theme="dark"] .topic {
+    background-color: var(--topic-dark);
     color: white;
 }
 
-.active > a {
+body[data-bs-theme="dark"] footer a {
     color: white;
+}
+
+body[data-bs-theme="dark"] footer img,
+body[data-bs-theme="dark"] ul.navbar-nav img {
+    filter: invert(1);
+}
+
+main#home img {
+    display: block;
+    margin: auto;
+    margin-bottom: 0.5rem;
 }
